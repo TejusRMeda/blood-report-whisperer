@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Processing from "./pages/Processing";
 import Results from "./pages/Results";
+import Timeline from "./pages/Timeline";
 import Error from "./pages/Error";
 import NotFound from "./pages/NotFound";
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/processing" element={<Processing />} />
           <Route path="/results" element={<Results />} />
+          <Route path="/timeline" element={<Timeline />} />
           <Route path="/error" element={<Error />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
