@@ -116,16 +116,16 @@ export const FileUpload = ({ onFileSelect, className }: FileUploadProps) => {
         </Card>
       )}
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         {/* Date Selection Card */}
-        <div className="space-y-4 p-6 rounded-lg border bg-card">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <CalendarIcon className="h-5 w-5 text-primary" />
+        <div className="space-y-3 p-4 rounded-lg border bg-card">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <CalendarIcon className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold">Report Date</h3>
-              <p className="text-sm text-muted-foreground">When was this test done?</p>
+              <h3 className="font-medium text-sm">Report Date</h3>
+              <p className="text-xs text-muted-foreground">When was this test done?</p>
             </div>
           </div>
           
@@ -134,7 +134,7 @@ export const FileUpload = ({ onFileSelect, className }: FileUploadProps) => {
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-12",
+                  "w-full justify-start text-left font-normal h-10",
                   !selectedDate && "text-muted-foreground"
                 )}
               >
@@ -142,7 +142,7 @@ export const FileUpload = ({ onFileSelect, className }: FileUploadProps) => {
                 {selectedDate ? format(selectedDate, "PPP") : <span>Select test date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 z-50" align="start">
               <Calendar
                 mode="single"
                 selected={selectedDate}
@@ -155,14 +155,14 @@ export const FileUpload = ({ onFileSelect, className }: FileUploadProps) => {
         </div>
 
         {/* File Upload Card */}
-        <div className="space-y-4 p-6 rounded-lg border bg-card">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <Upload className="h-5 w-5 text-primary" />
+        <div className="space-y-3 p-4 rounded-lg border bg-card">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <Upload className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold">Upload Report</h3>
-              <p className="text-sm text-muted-foreground">PDF, JPG, or PNG format</p>
+              <h3 className="font-medium text-sm">Upload Report</h3>
+              <p className="text-xs text-muted-foreground">PDF, JPG, or PNG format</p>
             </div>
           </div>
 
@@ -217,13 +217,23 @@ export const FileUpload = ({ onFileSelect, className }: FileUploadProps) => {
         )}
 
         {reports.length > 0 && (
-          <Button 
-            onClick={handleUploadAll} 
-            size="lg" 
-            className="w-full max-w-md mx-auto font-medium"
-          >
-            Upload & Analyze {reports.length} Report{reports.length > 1 ? 's' : ''}
-          </Button>
+          <div className="flex flex-col gap-3 w-full max-w-md mx-auto">
+            <Button 
+              onClick={() => {/* Navigate to summary view */}} 
+              variant="outline"
+              size="lg" 
+              className="w-full font-medium"
+            >
+              View Summary ({reports.length} Report{reports.length > 1 ? 's' : ''})
+            </Button>
+            <Button 
+              onClick={handleUploadAll} 
+              size="lg" 
+              className="w-full font-medium"
+            >
+              Upload & Analyze {reports.length} Report{reports.length > 1 ? 's' : ''}
+            </Button>
+          </div>
         )}
       </div>
     </div>
