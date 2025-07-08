@@ -1,13 +1,20 @@
 import { useState, useCallback } from 'react';
-import { Upload, Calendar as CalendarIcon } from 'lucide-react';
+import { Upload, Calendar as CalendarIcon, X, Plus, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
+interface ReportData {
+  id: string;
+  file: File;
+  date: Date;
+}
+
 interface FileUploadProps {
-  onFileSelect: (file: File, date: Date) => void;
+  onFileSelect: (reports: ReportData[]) => void;
   className?: string;
 }
 
@@ -15,6 +22,7 @@ export const FileUpload = ({ onFileSelect, className }: FileUploadProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [reports, setReports] = useState<ReportData[]>([]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -43,14 +51,71 @@ export const FileUpload = ({ onFileSelect, className }: FileUploadProps) => {
     }
   }, []);
 
-  const handleUpload = useCallback(() => {
+  const addReport = useCallback(() => {
     if (selectedFile && selectedDate) {
-      onFileSelect(selectedFile, selectedDate);
+      const newReport: ReportData = {
+        id: Date.now().toString(),
+        file: selectedFile,
+        date: selectedDate
+      };
+      setReports(prev => [...prev, newReport]);
+      setSelectedFile(null);
+      setSelectedDate(new Date());
     }
-  }, [selectedFile, selectedDate, onFileSelect]);
+  }, [selectedFile, selectedDate]);
+
+  const removeReport = useCallback((id: string) => {
+    setReports(prev => prev.filter(report => report.id !== id));
+  }, []);
+
+  const handleUploadAll = useCallback(() => {
+    if (reports.length > 0) {
+      onFileSelect(reports);
+    }
+  }, [reports, onFileSelect]);
 
   return (
     <div className={cn("w-full space-y-8", className)}>
+      {/* Added Reports List */}
+      {reports.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Reports to Upload ({reports.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {reports.map((report) => (
+              <div
+                key={report.id}
+                className="flex items-center justify-between p-3 rounded-lg border bg-card/50"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                    <FileText className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">{report.file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {format(report.date, "PPP")}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeReport(report.id)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2">
         {/* Date Selection Card */}
         <div className="space-y-4 p-6 rounded-lg border bg-card">
@@ -138,18 +203,29 @@ export const FileUpload = ({ onFileSelect, className }: FileUploadProps) => {
         </div>
       </div>
 
-      {/* Upload Button */}
-      {selectedFile && selectedDate && (
-        <div className="text-center">
+      {/* Action Buttons */}
+      <div className="flex flex-col gap-4">
+        {selectedFile && selectedDate && (
           <Button 
-            onClick={handleUpload} 
-            size="lg" 
-            className="w-full max-w-md font-medium"
+            onClick={addReport} 
+            variant="outline"
+            className="w-full max-w-md mx-auto font-medium"
           >
-            Upload & Analyze Report
+            <Plus className="mr-2 h-4 w-4" />
+            Add Report
           </Button>
-        </div>
-      )}
+        )}
+
+        {reports.length > 0 && (
+          <Button 
+            onClick={handleUploadAll} 
+            size="lg" 
+            className="w-full max-w-md mx-auto font-medium"
+          >
+            Upload & Analyze {reports.length} Report{reports.length > 1 ? 's' : ''}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

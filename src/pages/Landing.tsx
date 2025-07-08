@@ -1,23 +1,34 @@
 import { useNavigate } from 'react-router-dom';
 import { FileUpload } from '@/components/FileUpload';
 
+interface ReportData {
+  id: string;
+  file: File;
+  date: Date;
+}
+
 const Landing = () => {
   const navigate = useNavigate();
 
-  const handleFileSelect = (file: File, date: Date) => {
-    // Store file and date in localStorage for timeline tracking
+  const handleFileSelect = (reports: ReportData[]) => {
+    // Store all reports in localStorage for timeline tracking
     const existingReports = JSON.parse(localStorage.getItem('bloodReports') || '[]');
-    const newReport = {
-      id: Date.now(),
-      fileName: file.name,
-      date: date.toISOString(),
+    
+    const newReports = reports.map(report => ({
+      id: Date.now() + Math.random(), // Ensure unique IDs
+      fileName: report.file.name,
+      date: report.date.toISOString(),
       // Mock data - in real app, this would come from file processing
       results: generateMockResults()
-    };
+    }));
     
-    const updatedReports = [...existingReports, newReport];
+    const updatedReports = [...existingReports, ...newReports];
     localStorage.setItem('bloodReports', JSON.stringify(updatedReports));
-    sessionStorage.setItem('currentReport', JSON.stringify(newReport));
+    
+    // Store the first report as the current one for the processing flow
+    if (newReports.length > 0) {
+      sessionStorage.setItem('currentReport', JSON.stringify(newReports[0]));
+    }
     
     navigate('/processing');
   };
